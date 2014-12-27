@@ -1,0 +1,6 @@
+[submodule "lib/ioc-cpp"]
+	path = lib/ioc-cpp
+	url = git@github.com:mrts/ioc-cpp.git
+[submodule "test/test-cpp"]
+	path = test/test-cpp
+	url = git@github.com:mrts/test-cpp.git
