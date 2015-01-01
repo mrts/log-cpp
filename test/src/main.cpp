@@ -6,6 +6,12 @@
 
 #include <logcpp/log.h>
 #include <logcpp/FileLogger.h>
+#include <logcpp/GetAppDataPath.h>
+
+#if defined(_WIN32) && defined(ERROR)
+// including ShlObj.h causes global namespace pollution, clean it up
+#undef ERROR
+#endif
 
 #include <testcpp/testcpp.h>
 
@@ -82,8 +88,8 @@ private:
 
     void testFileLogging()
     {
-        auto tmpfile = "filelogger.tmp.log";
-        remove(tmpfile);
+        auto tmpfile = GetAppDataPath("log-cpp", "filelogger.tmp.log");
+        remove(tmpfile.c_str());
         auto mockLogger = make_shared<MockLogger>();
 
         Logger::setup(make_shared<FileLogger>(tmpfile), LogLevel::DEBUG);
@@ -106,7 +112,7 @@ private:
         Logger::setup(mockLogger, LogLevel::DEBUG);
 
         tmpfileSize = fileSize(tmpfile);
-        auto rotatedFile = std::string(tmpfile) + ".1";
+        auto rotatedFile = tmpfile + ".1";
         auto rotatedFileSize = fileSize(rotatedFile);
 #ifdef _WIN32
         auto expectedNewFileSize = 65u; // CRLF
@@ -116,7 +122,7 @@ private:
         assertEqual(rotatedFileSize, expectedTmpfileSize);
         assertEqual(tmpfileSize, expectedNewFileSize);
 
-        remove(tmpfile);
+        remove(tmpfile.c_str());
         remove(rotatedFile.c_str());
     }
 
